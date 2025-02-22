@@ -151,22 +151,17 @@
     });
 
     // Connect Wallet
-    async function connectWallet() {
-      if (isWalletConected) {
-        console.log("Wallet is connected already.");
-        return;
-      }
-      
-      try {
+   async function connectWallet() {
         const connectedWallet = await tonConnectUI.connectWallet();
-        if (connectedWallet) {
-          isWalletConected = true;
-          console.log("Wallet connected: ", connectedWallet);
-        }
-      } catch (error) {
-        console.error("Error connecting to wallet:", error);
-      }
+        // Do something with connectedWallet if needed
+        console.log("Wallet connected:", connectedWallet);
     }
+    
+
+    // Call the function
+    connectWallet().catch(error => {
+        console.error("Error connecting to wallet:", error);
+    });
     
     // Ton payments
     async function sendTonTransaction() {
