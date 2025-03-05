@@ -209,3 +209,16 @@
 }
 
 )();
+
+
+// Wait for the DOM to load
+document.addEventListener("DOMContentLoaded", function () {
+  // Access Telegram user data
+  const user = Telegram.WebApp.initDataUnsafe.user;
+
+  // Check if the user has a username
+  let username = user?.username || "Guest"; // Use "Guest" as a fallback if no username is available
+
+  // Update the username box
+  document.getElementById("username-text").textContent = username;
+});
