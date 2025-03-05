@@ -245,7 +245,45 @@ h6 {
 }
 
 /*--------------------------------------------------------------
+/* Username Box Styles */
+.username-box {
+  position: absolute;
+  top: 20px; /* Adjust as needed */
+  right: 20px; /* Adjust as needed */
+  background-color: rgba(128, 128, 128, 0.7); /* Grey with transparency */
+  padding: 10px 20px; /* Padding inside the box */
+  border-radius: 8px; /* Rounded corners */
+  color: var(--contrast-color); /* Text color */
+  font-size: 16px; /* Text size */
+  font-family: var(--default-font); /* Match the site's font */
+  z-index: 999; /* Ensure it's above other elements */
+  display: inline-flex; /* Stretch to fit content */
+  align-items: center; /* Center text vertically */
+  justify-content: center; /* Center text horizontally */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
 
+/* Username Text Styles */
+#username {
+  white-space: nowrap; /* Prevent text from wrapping */
+  overflow: hidden; /* Hide overflow */
+  text-overflow: ellipsis; /* Add ellipsis if text is too long */
+  max-width: 200px; /* Limit the maximum width of the box */
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .username-box {
+    top: 10px; /* Adjust for smaller screens */
+    right: 10px; /* Adjust for smaller screens */
+    padding: 8px 16px; /* Smaller padding for mobile */
+    font-size: 14px; /* Smaller text for mobile */
+  }
+
+  #username {
+    max-width: 150px; /* Smaller max-width for mobile */
+  }
+}
 
 /*--------------------------------------------------------------
 # Hero Section
