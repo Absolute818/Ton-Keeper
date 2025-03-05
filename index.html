@@ -13,8 +13,8 @@
   <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
 
   <!-- Favicons -->
-  <link href="assets/img/favicon.png" rel="icon">
-  <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+  <link href="assets/img/Ectoware.png" rel="icon">
+  <link href="assets/img/Ectoware.png" rel="apple-touch-icon">
   <script src="https://kit.fontawesome.com/98e7b92993.js" ></script>
 
   <!-- Fonts -->
@@ -116,63 +116,112 @@
   <!-- Main JS File -->
 
   <script>
-    let isWalletConected = false;
-    let tonConnectUI = null;
+   let isWalletConected = false;
+let tonConnectUI = null;
+let inactivityTimeout = null;
 
-    // Initialize TON Connect UI 
-    document.addEventListener("DOMContentLoaded", async function (){
-       tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-        manifestUrl: 'https://raw.githubusercontent.com/Absolute818/Ton-Keeper/refs/heads/main/tonconnect-manifest.json',
-        buttonRootId: 'ton-connect'
-    });
+// Initialize TON Connect UI 
+document.addEventListener("DOMContentLoaded", async function () {
+  tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+    manifestUrl: 'https://raw.githubusercontent.com/Absolute818/Ton-Keeper/refs/heads/main/tonconnect-manifest.json',
+    buttonRootId: 'ton-connect'
+  });
 
-      // Check if wallet is already connected
-      const connectedWallets = await tonConnectUI.getWallets();
-      if (connectedWallets.length > 0) { // Check if the array is not empty
-        isWalletConected = true;
-        console.log("Wallet is already connected", connectedWallets[0]); // Log the first connected wallet
-      }
-    });
+  // Check if wallet is already connected
+  const connectedWallets = await tonConnectUI.getWallets();
+  if (connectedWallets.length > 0) { // Check if the array is not empty
+    isWalletConected = true;
+    console.log("Wallet is already connected", connectedWallets[0]); // Log the first connected wallet
+    startInactivityTimer(); // Start the inactivity timer
+  }
+});
 
-    // Connect Wallet
-   async function connectWallet() {
-        const connectedWallet = await tonConnectUI.connectWallet();
-        // Do something with connectedWallet if needed
-        console.log("Wallet connected:", connectedWallet);
+// Connect Wallet
+async function connectWallet() {
+  try {
+    const connectedWallet = await tonConnectUI.connectWallet();
+    if (connectedWallet) {
+      isWalletConected = true;
+      console.log("Wallet connected:", connectedWallet);
+      startInactivityTimer(); // Start the inactivity timer
     }
-    
+  } catch (error) {
+    console.error("Error connecting to wallet:", error);
+  }
+}
 
-    // Call the function
-    connectWallet().catch(error => {
-        console.error("Error connecting to wallet:", error);
-    });
-    
-    // Ton payments
-    async function sendTonTransaction() {
-      if (!isWalletConected) {
-        console.error("Please connect your wallet first.");
-        return;
+// Disconnect Wallet
+function disconnectWallet() {
+  if (tonConnectUI) {
+    tonConnectUI.disconnect();
+    isWalletConected = false;
+    console.log("Wallet disconnected due to inactivity.");
+    clearInactivityTimer(); // Clear the inactivity timer
+  }
+}
+
+// Start Inactivity Timer
+function startInactivityTimer() {
+  const inactivityDuration = 0.1 * 60 * 60 * 1000; // 13 hours in milliseconds
+  clearInactivityTimer(); // Clear any existing timer
+
+  // Set a new timeout to disconnect the wallet after 13 hours of inactivity
+  inactivityTimeout = setTimeout(() => {
+    disconnectWallet();
+  }, inactivityDuration);
+
+  // Reset the timer on user activity
+  document.addEventListener('click', resetInactivityTimer);
+  document.addEventListener('scroll', resetInactivityTimer);
+  document.addEventListener('keypress', resetInactivityTimer);
+}
+
+// Reset Inactivity Timer
+function resetInactivityTimer() {
+  if (isWalletConected) {
+    clearInactivityTimer();
+    startInactivityTimer(); // Restart the timer
+  }
+}
+
+// Clear Inactivity Timer
+function clearInactivityTimer() {
+  if (inactivityTimeout) {
+    clearTimeout(inactivityTimeout);
+    inactivityTimeout = null;
+  }
+}
+
+// Ton payments
+async function sendTonTransaction() {
+  if (!isWalletConected) {
+    console.error("Please connect your wallet first.");
+    return;
+  }
+
+  const transaction = {
+    messages: [
+      {
+        address: "UQDPF2t9Krn8GC1-W6PFUE0hCShnoTD2-KvulmPikWQ1WhKD", // Destination address
+        amount: "2000000" // Toncoin in nanotons (0.02 TON)
       }
+    ]
+  };
 
-      const transaction = {
-        messages: [
-          {
-            address: "UQCR1i-3JImD3wXTW-Y3rD5Z-aVrppSJctudbryfLTShxhvi", // Destination address
-            amount: "2000000" // Toncoin in nanotons (0.02 TON)
-          }
-        ]
-      };
+  console.log("Sending Transaction:", transaction); // Log the transaction object
 
-      try {
-        const result = await tonConnectUI.sendTransaction(transaction);
-        console.log("Transaction successful:", result);
-      } catch (error) {
-        console.error("Transaction failed:", error);
-      }
-    }
+  try {
+    const result = await tonConnectUI.sendTransaction(transaction);
+    console.log("Transaction successful:", result);
+    resetInactivityTimer(); // Reset the timer on successful transaction
+  } catch (error) {
+    console.error("Transaction failed:", error);
+  }
+}
 
-    document.getElementById("connectWalletbtn").addEventListener("click", connectWallet);
-    document.getElementById("payTonbtn").addEventListener("click", sendTonTransaction);
+// Event Listeners
+document.getElementById("connectWalletbtn").addEventListener("click", connectWallet);
+document.getElementById("payTonbtn").addEventListener("click", sendTonTransaction);
 </script>
 
   <script src="assets/js/main.js"></script>
