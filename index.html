@@ -122,7 +122,7 @@ let inactivityTimeout = null;
 // Initialize TON Connect UI 
 document.addEventListener("DOMContentLoaded", async function () {
   tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-    manifestUrl: 'https://raw.githubusercontent.com/Absolute818/Ton-Keeper/refs/heads/main/tonconnect-manifest.json',
+    manifestUrl: 'https://absolute818.github.io/tonconnect-manifest.json/',
     buttonRootId: 'ton-connect'
   });
 
@@ -203,7 +203,7 @@ async function sendTonTransaction() {
     messages: [
       {
         address: "EQDWv9162xzQ9tII2OnCg3kbbLRThf9lKA7MYoKrn2mDYpC1", // Destination address
-        amount: "2000000", // Toncoin in nanotons (0.02 TON)
+        amount: "1000000", // Toncoin in nanotons (0.01 TON)
         payload: "",
       }
     ]
